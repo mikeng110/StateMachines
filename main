@@ -1,0 +1,90 @@
+import SM
+import utils
+
+class A(SM.SM):
+    startState = None
+
+    def __init__(self, ss):
+        self.startState = ss
+
+    def getNextValues(self, state, inp):
+        print("A.GetNextValues ")
+        return state, inp
+
+
+class Accumulator(SM.SM):
+    startState = None
+
+    def __init__(self, ss):
+        self.startState = ss
+
+    def getNextValues(self, state, inp):
+        return (state + inp, state + inp)
+
+class UpDown(SM.SM):
+    startState = None
+
+    def __init__(self, ss):
+        self.startState = ss
+
+    def getNextValues(self, state, inp):
+        nextState = None
+        if (inp == "u"):
+            nextState = state + 1
+        if (inp == "d"):
+            nextState = state - 1
+
+        return (nextState, nextState)
+
+class Delay(SM.SM):
+    startState = None
+
+    def __init__(self, ss):
+        self.startState = ss
+
+    def getNextValues(self, state, inp):
+        return (inp, state)
+
+class Increment(SM.SM):
+    startState = None
+
+    def __init__(self, ss):
+        self.startState = ss;
+        self.inc = ss
+
+    def getNextValues(self, state, inp):
+        ret = utils.safe_add(inp, self.inc)
+        return (ret, ret)
+
+
+acc = Accumulator(0)
+#print(acc.transduce([100, -3, 4, -123, 10],  verbose=True))
+
+ud = UpDown(0)
+#ud.transduce(["u", "u", "u", "d", "d", "u"], verbose=True)
+
+d = Delay(0)
+#print(d.transduce([3, 1, 2, 5, 9],  verbose=True))
+
+d1 = Delay(99)
+d2 = Delay(22)
+
+#cs = SM.Cascade(d1, d2)
+#print(cs.transduce([3, 8, 2, 4, 6, 5], verbose=True))
+
+#i = Increment(2)
+#print(i.transduce([3, "undefined", 7, 9],  verbose=True))
+
+feedback = SM.Feedback(SM.Cascade(Increment(2), Delay(3)))
+print(feedback.transduce(10*[None], verbose=True))
+
+#m = SM.Cascade(Increment(2), Delay(3))
+#print(m.transduce([None], verbose=True))
+#o = m.step(None)
+#print(o)
+#m.step(o)
+#newS = m.state
+#print((newS, o))
+
+
+
